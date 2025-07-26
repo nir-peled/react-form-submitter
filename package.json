@@ -24,7 +24,7 @@
 		"forms",
 		"react-hooks"
 	],
-	"author": "",
+	"author": "Nir Peler <nir@peled.cc>",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/nir-peled/react-form-submitter/issues"
