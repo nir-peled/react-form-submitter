@@ -8,7 +8,7 @@ Expands the submission logic of React Hook Form to include:
 - Transform data before submission
 - Submit only changed data - no need to send values to be ignored!
 - Callbacks for onSuccess, onFailure, onError
-- Possible to ask to confirmation before submission
+- Possible to ask confirmation before submission
 - Callback for mutate, in case the form's default values are dynamically fetched using something like TanStack Query
 
 ## Example
