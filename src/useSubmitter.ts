@@ -21,11 +21,12 @@ interface UseSubmitterParams<
 /**
  * Create a function that submits form data to an endpoint or a server action
  *
- * @param endpoint the endpoint to submit to
+ * @param destination the endpoint or the server action to submit to
  * @param defaultValues the form's default values - submit only values not in here
  * @param method fetch HTTP method - default is POST
  * @param onSuccess callback on successful submit
  * @param onError callback on error thrown
+ * @param onFailure callback on failed submit
  * @param transform function to transform the data before checks and submission
  * @param fetchOptions options for `fetch`
  * @param confirmation if included, use `confirm` with this message, and only move forward if confirmed
