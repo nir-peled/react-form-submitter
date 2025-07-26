@@ -5,7 +5,7 @@ interface UseSubmitterParams<
 	T extends Record<string, unknown>,
 	D extends Record<string, unknown> = T,
 	FetchOptions extends RequestInit = RequestInit,
-	TDefaults extends Partial<D> | undefined = undefined
+	TDefaults extends Partial<D> | undefined = undefined,
 > {
 	defaultValues?: TDefaults;
 	method?: string;
@@ -36,12 +36,12 @@ export function useSubmitter<
 	T extends Record<string, unknown>,
 	D extends Record<string, unknown> = T,
 	FetchOptions extends RequestInit = RequestInit,
-	TDefaults extends Partial<D> | undefined = undefined
+	TDefaults extends Partial<D> | undefined = undefined,
 >(
 	destination:
 		| string
 		| ((
-				data: TDefaults extends undefined ? D : Partial<D>
+				data: TDefaults extends undefined ? D : Partial<D>,
 		  ) => boolean | Promise<boolean>),
 	{
 		defaultValues,
@@ -53,7 +53,7 @@ export function useSubmitter<
 		fetchOptions,
 		confirmation,
 		mutate,
-	}: UseSubmitterParams<T, D, FetchOptions, TDefaults>
+	}: UseSubmitterParams<T, D, FetchOptions, TDefaults>,
 ): {
 	isFailed: boolean;
 	submitter: (data: T, event?: BaseSyntheticEvent) => Promise<void>;
@@ -72,7 +72,7 @@ export function useSubmitter<
 				if (typeof destination == "string") {
 					let formData = await to_form_data_without_default(
 						transformedData,
-						defaultValues
+						defaultValues,
 					);
 					response = await fetch(destination, {
 						method,
@@ -82,7 +82,7 @@ export function useSubmitter<
 					submitOk = response && response.ok;
 				} else {
 					submitOk = await destination(
-						await without_defaults(transformedData, defaultValues)
+						await without_defaults(transformedData, defaultValues),
 					);
 				}
 
@@ -109,7 +109,7 @@ export function useSubmitter<
 			fetchOptions,
 			confirmation,
 			mutate,
-		]
+		],
 	);
 
 	return { isFailed, submitter };
@@ -117,13 +117,18 @@ export function useSubmitter<
 
 async function to_form_data_without_default<T extends Record<string, unknown>>(
 	data: T,
-	default_data?: Partial<T>
+	default_data?: Partial<T>,
 ): Promise<FormData> {
 	let form_data = new FormData();
 	for (let [key, value] of Object.entries(data)) {
-		if (!default_data || !(await is_same_values(value, default_data[key as keyof T]))) {
+		if (
+			!default_data ||
+			!(await is_same_values(value, default_data[key as keyof T]))
+		) {
 			const form_value =
-				typeof value == "string" || value instanceof File ? value : JSON.stringify(value);
+				typeof value == "string" || value instanceof File
+					? value
+					: JSON.stringify(value);
 			form_data.append(key, form_value);
 		}
 	}
@@ -133,7 +138,7 @@ async function to_form_data_without_default<T extends Record<string, unknown>>(
 
 async function without_defaults<T extends Record<string, unknown>>(
 	values: T,
-	defaultValues?: Partial<T>
+	defaultValues?: Partial<T>,
 ): Promise<typeof defaultValues extends undefined ? T : Partial<T>> {
 	if (!defaultValues) return values;
 
@@ -146,7 +151,10 @@ async function without_defaults<T extends Record<string, unknown>>(
 	return submit_values as any;
 }
 
-async function is_same_values<T, D>(value: T, default_value: D): Promise<boolean> {
+async function is_same_values<T, D>(
+	value: T,
+	default_value: D,
+): Promise<boolean> {
 	if (!default_value) return false;
 	if (value instanceof File) {
 		if (!(default_value instanceof File)) return false;

@@ -22,7 +22,7 @@ describe("useSubmitter to fetch", () => {
 				onSuccess: mockOnSuccess,
 				onError: mockOnError,
 				onFailure: mockOnFailure,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -49,7 +49,7 @@ describe("useSubmitter to fetch", () => {
 		const { result } = renderHook(() =>
 			useSubmitter("https://example.com", {
 				defaultValues: { name: "Nir", age: 30 },
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir", age: 31 }));
@@ -67,7 +67,7 @@ describe("useSubmitter to fetch", () => {
 		const { result } = renderHook(() =>
 			useSubmitter("https://example.com", {
 				transform,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -87,7 +87,7 @@ describe("useSubmitter to fetch", () => {
 		const { result } = renderHook(() =>
 			useSubmitter("https://example.com", {
 				confirmation: "Are you sure?",
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -102,7 +102,7 @@ describe("useSubmitter to fetch", () => {
 		const { result } = renderHook(() =>
 			useSubmitter("https://example.com", {
 				confirmation: "Are you sure?",
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -117,7 +117,7 @@ describe("useSubmitter to fetch", () => {
 		const { result } = renderHook(() =>
 			useSubmitter("https://example.com", {
 				onError: mockOnError,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -131,7 +131,7 @@ describe("useSubmitter to fetch", () => {
 		const { result } = renderHook(() =>
 			useSubmitter("https://example.com", {
 				mutate: mockMutate,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -148,7 +148,7 @@ describe("useSubmitter to fetch", () => {
 				onFailure: mockOnFailure,
 				onError: mockOnError,
 				mutate: mockMutate,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -156,7 +156,7 @@ describe("useSubmitter to fetch", () => {
 		expect(fetch).toHaveBeenCalled();
 		expect(mockOnFailure).toHaveBeenCalledWith(
 			{ name: "Nir" },
-			{ ok: false, status: 400 }
+			{ ok: false, status: 400 },
 		);
 		expect(mockOnSuccess).not.toHaveBeenCalled();
 		expect(mockOnError).not.toHaveBeenCalled();
@@ -183,7 +183,7 @@ describe("useSubmitter to server action", () => {
 				onSuccess: mockOnSuccess,
 				onError: mockOnError,
 				onFailure: mockOnFailure,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -205,7 +205,7 @@ describe("useSubmitter to server action", () => {
 				onError: mockOnError,
 				onFailure: mockOnFailure,
 				mutate: mockMutate,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -226,7 +226,7 @@ describe("useSubmitter to server action", () => {
 			useSubmitter(serverAction, {
 				transform,
 				mutate: mockMutate,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -242,7 +242,7 @@ describe("useSubmitter to server action", () => {
 		const { result } = renderHook(() =>
 			useSubmitter(serverAction, {
 				mutate: mockMutate,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -258,7 +258,7 @@ describe("useSubmitter to server action", () => {
 		const { result } = renderHook(() =>
 			useSubmitter(serverAction, {
 				confirmation: "Are you sure?",
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -274,7 +274,7 @@ describe("useSubmitter to server action", () => {
 		const { result } = renderHook(() =>
 			useSubmitter(serverAction, {
 				confirmation: "Are you sure?",
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
@@ -289,7 +289,7 @@ describe("useSubmitter to server action", () => {
 		const { result } = renderHook(() =>
 			useSubmitter(serverAction, {
 				onError: mockOnError,
-			})
+			}),
 		);
 
 		await act(() => result.current.submitter({ name: "Nir" }));
