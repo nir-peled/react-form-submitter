@@ -6,7 +6,7 @@ Expands the submission logic of React Hook Form to include:
 
 - Submit either to an endpoint (with `fetch`) or to a server action, or any function
 - Transform data before submission
-- Submit only changed data - no need to send values you already have!
+- Submit only changed data - no need to send values to be ignored!
 - Callbacks for onSuccess, onFailure, onError
 - Possible to ask to confirmation before submission
 - Callback for mutate, in case the form's default values are dynamically fetched using something like TanStack Query
