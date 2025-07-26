@@ -7,31 +7,27 @@ interface UseSubmitterParams<
 	FetchOptions extends RequestInit = RequestInit,
 	TDefaults extends Partial<D> | undefined = undefined
 > {
-	default_values?: TDefaults;
-	reset?: (data?: Partial<T> | undefined) => void;
+	defaultValues?: TDefaults;
 	method?: string;
-	on_success?: (data: Partial<D>, response?: Response) => void;
-	on_error?: (e: unknown) => void;
+	onSuccess?: (data: D, response?: Response) => void;
+	onFailure?: (data: D, response?: Response) => void;
+	onError?: (e: unknown) => void;
 	transform?: (data: T) => D;
-	fetch_options?: FetchOptions;
+	fetchOptions?: FetchOptions;
 	confirmation?: string;
 	mutate?: (data: D) => void;
 }
 
 /**
- * Create a function that submits form data to an endpoint, and
- * handles default values, form reset and failed flag
+ * Create a function that submits form data to an endpoint or a server action
  *
  * @param endpoint the endpoint to submit to
- * @param is_failed the current form failed flag
- * @param set_is_failed form failed flag setter
- * @param default_values the form's default values - submit only values not in here
- * @param reset form reset hook
+ * @param defaultValues the form's default values - submit only values not in here
  * @param method fetch HTTP method - default is POST
- * @param on_success callback on successful submit
- * @param on_error callback on error thrown
+ * @param onSuccess callback on successful submit
+ * @param onError callback on error thrown
  * @param transform function to transform the data before checks and submission
- * @param fetch_options options for `fetch`
+ * @param fetchOptions options for `fetch`
  * @param confirmation if included, use `confirm` with this message, and only move forward if confirmed
  * @param mutate data mutation hook
  * @returns the submitter function to use with handleSubmit
@@ -48,76 +44,75 @@ export function useSubmitter<
 				data: TDefaults extends undefined ? D : Partial<D>
 		  ) => boolean | Promise<boolean>),
 	{
-		default_values,
-		reset,
+		defaultValues,
 		method = "POST",
-		on_success,
-		on_error,
+		onSuccess,
+		onFailure,
+		onError,
 		transform,
-		fetch_options,
+		fetchOptions,
 		confirmation,
 		mutate,
 	}: UseSubmitterParams<T, D, FetchOptions, TDefaults>
 ): {
-	is_failed: boolean;
+	isFailed: boolean;
 	submitter: (data: T, event?: BaseSyntheticEvent) => Promise<void>;
 } {
-	const [is_failed, set_is_failed] = useState<boolean>(false);
+	const [isFailed, setIsFailed] = useState<boolean>(false);
 
 	const submitter = useCallback(
 		async (data: T, event?: BaseSyntheticEvent) => {
 			if (event) event.preventDefault();
-			let transed_data = (transform ? transform(data) : data) as D;
+			let transformedData = (transform ? transform(data) : data) as D;
 
-			let submit_ok = false;
+			let submitOk = false;
 			let response: Response | undefined;
 			if (confirmation && !confirm(confirmation)) return;
 			try {
 				if (typeof destination == "string") {
-					let form_data = await to_form_data_without_default(
-						transed_data,
-						default_values
+					let formData = await to_form_data_without_default(
+						transformedData,
+						defaultValues
 					);
 					response = await fetch(destination, {
 						method,
-						body: form_data,
-						...fetch_options,
+						body: formData,
+						...fetchOptions,
 					});
-					submit_ok = response && response.ok;
+					submitOk = response && response.ok;
 				} else {
-					submit_ok = await destination(
-						await without_defaults(transed_data, default_values)
+					submitOk = await destination(
+						await without_defaults(transformedData, defaultValues)
 					);
 				}
+
+				if (!submitOk && onFailure) onFailure(transformedData, response);
 			} catch (e) {
-				if (on_error) on_error(e);
+				if (onError) onError(e);
 			} finally {
-				if (submit_ok) {
-					set_is_failed(false);
-					if (reset) reset();
-					if (on_success) on_success(transed_data, response);
-					if (mutate) mutate_data(mutate, transed_data, default_values);
+				if (submitOk) {
+					setIsFailed(false);
+					if (onSuccess) onSuccess(transformedData, response);
+					if (mutate) mutate(transformedData);
 				} else {
-					set_is_failed(true);
-					if (reset) reset(data);
+					setIsFailed(true);
 				}
 			}
 		},
 		[
-			is_failed,
-			default_values,
-			reset,
+			isFailed,
+			defaultValues,
 			method,
-			on_success,
-			on_error,
+			onSuccess,
+			onError,
 			transform,
-			fetch_options,
+			fetchOptions,
 			confirmation,
 			mutate,
 		]
 	);
 
-	return { is_failed, submitter };
+	return { isFailed, submitter };
 }
 
 async function to_form_data_without_default<T extends Record<string, unknown>>(
@@ -138,13 +133,13 @@ async function to_form_data_without_default<T extends Record<string, unknown>>(
 
 async function without_defaults<T extends Record<string, unknown>>(
 	values: T,
-	default_values?: Partial<T>
-): Promise<typeof default_values extends undefined ? T : Partial<T>> {
-	if (!default_values) return values;
+	defaultValues?: Partial<T>
+): Promise<typeof defaultValues extends undefined ? T : Partial<T>> {
+	if (!defaultValues) return values;
 
 	let submit_values: Partial<T> = {};
 	for (let [key, value] of Object.entries(values)) {
-		if (!(await is_same_values(value, default_values[key as keyof T])))
+		if (!(await is_same_values(value, defaultValues[key as keyof T])))
 			submit_values[key as keyof T] = value as T[keyof T];
 	}
 
@@ -168,26 +163,4 @@ async function is_same_files(file: File, default_file: File): Promise<boolean> {
 		file.type === default_file.type &&
 		file.lastModified === default_file.lastModified
 	);
-}
-
-async function mutate_data<T extends Record<string, unknown>>(
-	mutate: (data: T) => void,
-	data: T,
-	default_values: Partial<T> | undefined
-) {
-	if (!default_values) {
-		mutate(data);
-		return;
-	}
-
-	let new_data = default_values as T;
-	for (let key of Object.keys(default_values!)) {
-		let old_value = new_data[key as keyof T];
-		let new_value = data[key as keyof T];
-		if (old_value == undefined || new_value == undefined) {
-			new_data[key as keyof T] = new_value as T[keyof T];
-		}
-	}
-
-	mutate(new_data);
 }

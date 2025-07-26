@@ -20,5 +20,7 @@
 
 		"declaration": true,
 		"declarationMap": true
-	}
+	},
+	"include": ["src/**/*"],
+	"exclude": ["**/tests/**/*"]
 }
