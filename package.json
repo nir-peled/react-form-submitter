@@ -12,6 +12,7 @@
 		"test:ui": "vitest --ui",
 		"ci": "npm run check-format && npm run build && npm run test",
 		"prepublishOnly": "npm run ci",
+		"changeset": "changeset",
 		"local-release": "changeset version && changeset publish"
 	},
 	"repository": {
