@@ -1,0 +1,35 @@
+{
+	"name": "react-form-submitter",
+	"version": "0.1.0",
+	"description": "Submitter callback hook to use with React Hook Form",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nir-peled/react-form-submitter.git"
+	},
+	"keywords": [
+		"react",
+		"typescript",
+		"hooks",
+		"form",
+		"forms",
+		"react-hooks"
+	],
+	"author": "",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/nir-peled/react-form-submitter/issues"
+	},
+	"homepage": "https://github.com/nir-peled/react-form-submitter#readme",
+	"devDependencies": {
+		"@types/react": "^19.1.8",
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"react": "^19.1.0"
+	}
+}
